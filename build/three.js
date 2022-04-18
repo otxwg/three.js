@@ -7309,9 +7309,7 @@
 
 		applyMatrix4(m) {
 			for (let i = 0, l = this.count; i < l; i++) {
-				_vector$9.x = this.getX(i);
-				_vector$9.y = this.getY(i);
-				_vector$9.z = this.getZ(i);
+				_vector$9.fromBufferAttribute(this, i);
 
 				_vector$9.applyMatrix4(m);
 
@@ -7323,9 +7321,7 @@
 
 		applyNormalMatrix(m) {
 			for (let i = 0, l = this.count; i < l; i++) {
-				_vector$9.x = this.getX(i);
-				_vector$9.y = this.getY(i);
-				_vector$9.z = this.getZ(i);
+				_vector$9.fromBufferAttribute(this, i);
 
 				_vector$9.applyNormalMatrix(m);
 
@@ -7337,9 +7333,7 @@
 
 		transformDirection(m) {
 			for (let i = 0, l = this.count; i < l; i++) {
-				_vector$9.x = this.getX(i);
-				_vector$9.y = this.getY(i);
-				_vector$9.z = this.getZ(i);
+				_vector$9.fromBufferAttribute(this, i);
 
 				_vector$9.transformDirection(m);
 
@@ -16594,13 +16588,15 @@
 		let useOffscreenCanvas = false;
 
 		try {
-			useOffscreenCanvas = typeof OffscreenCanvas !== 'undefined' && new OffscreenCanvas(1, 1).getContext('2d') !== null;
+			useOffscreenCanvas = typeof OffscreenCanvas !== 'undefined' // eslint-disable-next-line compat/compat
+			&& new OffscreenCanvas(1, 1).getContext('2d') !== null;
 		} catch (err) {// Ignore any errors
 		}
 
 		function createCanvas(width, height) {
 			// Use OffscreenCanvas when available. Specially needed in web workers
-			return useOffscreenCanvas ? new OffscreenCanvas(width, height) : createElementNS('canvas');
+			return useOffscreenCanvas ? // eslint-disable-next-line compat/compat
+			new OffscreenCanvas(width, height) : createElementNS('canvas');
 		}
 
 		function resizeImage(image, needsPowerOfTwo, needsNewCanvas, maxSize) {
@@ -20454,15 +20450,11 @@
 					!halfFloatSupportedByExt) {
 						console.error('THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not in UnsignedByteType or implementation defined type.');
 						return;
-					}
+					} // the following if statement ensures valid read requests (no out-of-bounds pixels, see #8604)
 
-					if (_gl.checkFramebufferStatus(_gl.FRAMEBUFFER) === _gl.FRAMEBUFFER_COMPLETE) {
-						// the following if statement ensures valid read requests (no out-of-bounds pixels, see #8604)
-						if (x >= 0 && x <= renderTarget.width - width && y >= 0 && y <= renderTarget.height - height) {
-							_gl.readPixels(x, y, width, height, utils.convert(textureFormat), utils.convert(textureType), buffer);
-						}
-					} else {
-						console.error('THREE.WebGLRenderer.readRenderTargetPixels: readPixels from renderTarget failed. Framebuffer not complete.');
+
+					if (x >= 0 && x <= renderTarget.width - width && y >= 0 && y <= renderTarget.height - height) {
+						_gl.readPixels(x, y, width, height, utils.convert(textureFormat), utils.convert(textureType), buffer);
 					}
 				} finally {
 					// restore framebuffer of current render target if necessary
@@ -20833,9 +20825,7 @@
 
 		applyMatrix4(m) {
 			for (let i = 0, l = this.data.count; i < l; i++) {
-				_vector$6.x = this.getX(i);
-				_vector$6.y = this.getY(i);
-				_vector$6.z = this.getZ(i);
+				_vector$6.fromBufferAttribute(this, i);
 
 				_vector$6.applyMatrix4(m);
 
@@ -20847,9 +20837,7 @@
 
 		applyNormalMatrix(m) {
 			for (let i = 0, l = this.count; i < l; i++) {
-				_vector$6.x = this.getX(i);
-				_vector$6.y = this.getY(i);
-				_vector$6.z = this.getZ(i);
+				_vector$6.fromBufferAttribute(this, i);
 
 				_vector$6.applyNormalMatrix(m);
 
@@ -20861,9 +20849,7 @@
 
 		transformDirection(m) {
 			for (let i = 0, l = this.count; i < l; i++) {
-				_vector$6.x = this.getX(i);
-				_vector$6.y = this.getY(i);
-				_vector$6.z = this.getZ(i);
+				_vector$6.fromBufferAttribute(this, i);
 
 				_vector$6.transformDirection(m);
 
@@ -21356,10 +21342,7 @@
 			const skinWeight = this.geometry.attributes.skinWeight;
 
 			for (let i = 0, l = skinWeight.count; i < l; i++) {
-				vector.x = skinWeight.getX(i);
-				vector.y = skinWeight.getY(i);
-				vector.z = skinWeight.getZ(i);
-				vector.w = skinWeight.getW(i);
+				vector.fromBufferAttribute(skinWeight, i);
 				const scale = 1.0 / vector.manhattanLength();
 
 				if (scale !== Infinity) {
@@ -33917,15 +33900,15 @@
 			// TODO: delete this comment?
 			const distanceGeometry = new THREE.IcosahedronGeometry( 1, 2 );
 			const distanceMaterial = new THREE.MeshBasicMaterial( { color: hexColor, fog: false, wireframe: true, opacity: 0.1, transparent: true } );
-			this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
+				this.lightSphere = new THREE.Mesh( bulbGeometry, bulbMaterial );
 			this.lightDistance = new THREE.Mesh( distanceGeometry, distanceMaterial );
-			const d = light.distance;
-			if ( d === 0.0 ) {
-				this.lightDistance.visible = false;
-			} else {
-				this.lightDistance.scale.set( d, d, d );
-			}
-			this.add( this.lightDistance );
+				const d = light.distance;
+				if ( d === 0.0 ) {
+					this.lightDistance.visible = false;
+				} else {
+					this.lightDistance.scale.set( d, d, d );
+				}
+				this.add( this.lightDistance );
 			*/
 		}
 
@@ -33942,12 +33925,12 @@
 			}
 			/*
 			const d = this.light.distance;
-				if ( d === 0.0 ) {
-					this.lightDistance.visible = false;
-				} else {
-					this.lightDistance.visible = true;
+					if ( d === 0.0 ) {
+						this.lightDistance.visible = false;
+					} else {
+						this.lightDistance.visible = true;
 				this.lightDistance.scale.set( d, d, d );
-				}
+					}
 			*/
 
 		}
@@ -34346,7 +34329,7 @@
 			1/___0/|
 			| 6__|_7
 			2/___3/
-				0: max.x, max.y, max.z
+					0: max.x, max.y, max.z
 			1: min.x, max.y, max.z
 			2: min.x, min.y, max.z
 			3: max.x, min.y, max.z
@@ -36767,3 +36750,4 @@
 	Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGhyZWUuanMiLCJzb3VyY2VzIjpbXSwic291cmNlc0NvbnRlbnQiOltdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiIn0=
